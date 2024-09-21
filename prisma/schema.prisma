@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model nftCollectionSchema {
+  id                    String   @id @default(cuid())
+  ownerAddress          String
+  collectionName        String
+  collectionDescription String
+  collectionImage       String
+  createdAt             DateTime @default(now())
+  creatorId             String
+  creator               User     @relation("CollectionCreator", fields: [creatorId], references: [id])
+  creatorWalletAddress  String
+  collectionAddress     String
+  tokenId               String
+  discordLink           String
+  nfts                  nftSchema[]
+}
+
+model nftSchema {
+  id                String   @id @default(cuid())
+  tokenId           Int
+  name              String
+  description       String 
+  imageUrl          String @unique
+  image             String
+  mintPrice         Int 
+  mintSupply        Int
+  mintSupplyLeft    Int?
+  scarcity          String?
+  creatorAddress    String 
+  createdAt         DateTime @default(now())
+  creatorId         String
+  transactionHash   String
+  collectionId      String
+  collectionAddress String
+  collection        nftCollectionSchema @relation(fields: [collectionId], references: [id])
+  creator           User                @relation("NFTCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                    String               @id @default(cuid())
+  address               String               @unique
+  nftCollectionsCreated nftCollectionSchema[] @relation("CollectionCreator")
+  nftsCreated           nftSchema[]          @relation("NFTCreator")
+}
