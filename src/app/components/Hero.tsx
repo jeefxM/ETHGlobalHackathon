@@ -39,7 +39,7 @@ const Hero = () => {
   }
 
   return (
-    <div className="">
+    <div className={`font-kmrRegular`}>
       {user && <YourCommunities user={user} />}
       <div className="flex flex-col justiy w-full items-start gap-14">
         <p className="text-4xl text-center f font-kmr font-kmrRegular">{`Popular communities`}</p>

@@ -34,6 +34,7 @@ import { createUser, getUser } from "../lib/prismaFunctions";
 import { uploadCollectionToDb } from "../lib/prismaFunctions";
 import useSWR from "swr";
 import { AirdaoTestnet } from "@thirdweb-dev/chains";
+import { useEdgeStore } from "@/lib/edgestore";
 
 const fetcher = async (address: string) => {
   const user = await getUser(address);
@@ -42,6 +43,7 @@ const fetcher = async (address: string) => {
 
 const CreateCollection = () => {
   const address = useAddress();
+  const { edgestore } = useEdgeStore();
 
   const { data: user, error } = useSWR(address ? address : null, fetcher);
 
@@ -52,6 +54,7 @@ const CreateCollection = () => {
     discordLink: z.string(),
     collectionAddress: z.string().min(42).max(42),
     price: z.string().min(0),
+    nftImage: z.instanceof(File),
   });
 
   const form = useForm<z.infer<typeof schema>>({
@@ -63,10 +66,18 @@ const CreateCollection = () => {
   const DeployERC721Contract = async (
     collectionData: z.infer<typeof schema>
   ) => {
-    console.log(collectionData);
+    // console.log(collectionData.nftImage);
+    const res = await edgestore.publicFiles.upload({
+      file: collectionData.nftImage,
+    });
+    console.log(res);
     const sdk = await ThirdwebSDK.fromSigner(signer!, AirdaoTestnet, {
       clientId: ThirdwebClient,
     });
+    // const contract = await sdk.deployer.deployEdition({
+    //   name: collectionData.nftName,
+    //   primary_sale_recipient: address!,
+    // });
     if (!user) {
       await createUser(address!);
     }
@@ -83,8 +94,7 @@ const CreateCollection = () => {
           name: collectionData.nftName,
           description: collectionData.nftDescription || "",
           owner: address!,
-          image:
-            "https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Post_Timeskip_Infobox.png/revision/latest?cb=20240306200817",
+          image: res.url,
         },
       ]);
       try {
@@ -112,7 +122,7 @@ const CreateCollection = () => {
             address!,
             collectionData.nftName,
             collectionData.collectionAddress,
-            "https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Post_Timeskip_Infobox.png/revision/latest?cb=20240306200817",
+            res.url,
             user.id,
             collectionData.nftDescription || "",
             nextTokenId.toString(),
@@ -136,12 +146,10 @@ const CreateCollection = () => {
       <Form {...form}>
         <div className="flex justify-between">
           <p className="ali text-semibold flex justify-center align-middle text-xl">
-            Create your Collection
+            Create Your Tokengated NFT
           </p>
         </div>
-        <p>
-          {`Your username will be displayed in the metadata of your minted NFT creations as the creator's name. Please note that once an NFT is minted, all metadata, including your username, collectible title, and all your minted files, becomes immutable and cannot be altered on the blockchain`}
-        </p>
+        <p>{``}</p>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
@@ -165,6 +173,28 @@ const CreateCollection = () => {
                 <FormLabel>NFT description (Optional)</FormLabel>
                 <FormControl>
                   <Textarea {...field} placeholder="Collection description" />
+                </FormControl>
+                {/* <FormMessage /> */}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="nftImage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>NFT Image</FormLabel>
+                <FormControl>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        field.onChange(file);
+                      }
+                    }}
+                  />
                 </FormControl>
                 {/* <FormMessage /> */}
               </FormItem>
@@ -222,7 +252,7 @@ const CreateCollection = () => {
             </p>
           )}
 
-          <ConnectWallet />
+          <ConnectWallet switchToActiveChain />
           <div>
             {address && (
               <Button type="submit">

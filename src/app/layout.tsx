@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ThirdwebAppWrapper from "./components/Thridweb";
 import { Toaster } from "@/components/ui/toaster";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 const geistSans = localFont({
   src: "/fonts/GeistVF.woff",
@@ -58,12 +59,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fonts} bg-[#FEF3FF]`}>
+    <html
+      lang="en"
+      className={`${fonts} bg-[#FEF3FF] font-kmr font font-kmrSemiBold`}
+    >
       <head></head>
       <body>
         <ThirdwebAppWrapper>
-          {children}
-          <Toaster />
+          <EdgeStoreProvider>
+            {children}
+            <Toaster />
+          </EdgeStoreProvider>
         </ThirdwebAppWrapper>
       </body>
     </html>

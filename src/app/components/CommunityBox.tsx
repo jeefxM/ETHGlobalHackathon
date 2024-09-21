@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { useAddress, Web3Button } from "@thirdweb-dev/react";
+import { useAddress, useNFTBalance, Web3Button } from "@thirdweb-dev/react";
 import { useOwnedNFTs } from "@thirdweb-dev/react";
 import { useContract } from "@thirdweb-dev/react";
 import Link from "next/link";
@@ -36,7 +36,13 @@ const CommunityBox: React.FC<CommunityBoxProps> = ({
 }) => {
   const [value, setValue] = useState(false);
   const { contract } = useContract(item.collectionAddress);
-  const { data: ownsNft, error } = useOwnedNFTs(contract, address);
+  const { data: ownsNft, error } = useNFTBalance(
+    contract,
+    address,
+    item.tokenId
+  );
+
+  console.log(ownsNft?.toNumber(), "owns");
 
   // console.log(item);
 
@@ -54,7 +60,7 @@ const CommunityBox: React.FC<CommunityBoxProps> = ({
         className="rounded-3xl group-hover:opacity-0 transition-opacity duration-300"
       />
       <div className="absolute inset-0 flex  items-center justify-center p-4 bg-[#F7E7F9] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        {ownsNft && ownsNft?.length! > 0 ? (
+        {ownsNft?.toNumber() ? (
           <div className="flex flex-col gap-4 items-center">
             <p className="text-xl font-semibold">{item.collectionName}</p>
             <Link
@@ -67,17 +73,29 @@ const CommunityBox: React.FC<CommunityBoxProps> = ({
             </Link>
           </div>
         ) : (
-          <Web3Button
-            contractAddress={item.collectionAddress}
-            action={(contract) => {
-              contract.erc1155.claim(item.tokenId, 1);
-              claimNft(userId, item.id);
-            }}
-            className="bg-transparent"
-            style={{ backgroundColor: "transparent" }}
-          >
-            Claim NFT
-          </Web3Button>
+          <div className="flex flex-col gap-4 items-center font-semibold">
+            {item.collectionName}
+            <Web3Button
+              contractAddress={item.collectionAddress}
+              action={(contract) => {
+                contract.erc1155.claim(item.tokenId, 1);
+                claimNft(userId, item.id);
+              }}
+              // className="bg-transparent"
+              style={{
+                backgroundColor: "#71237A",
+                color: "white",
+                padding: "0.5rem 1.5rem",
+                borderRadius: "40px",
+                maxWidth: "200px",
+                textAlign: "center",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Mint
+            </Web3Button>
+          </div>
         )}
       </div>
     </div>
