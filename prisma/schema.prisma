@@ -26,33 +26,13 @@ model nftCollectionSchema {
   collectionAddress     String
   tokenId               String
   discordLink           String
-  nfts                  nftSchema[]
-}
-
-model nftSchema {
-  id                String   @id @default(cuid())
-  tokenId           Int
-  name              String
-  description       String 
-  imageUrl          String @unique
-  image             String
-  mintPrice         Int 
-  mintSupply        Int
-  mintSupplyLeft    Int?
-  scarcity          String?
-  creatorAddress    String 
-  createdAt         DateTime @default(now())
-  creatorId         String
-  transactionHash   String
-  collectionId      String
-  collectionAddress String
-  collection        nftCollectionSchema @relation(fields: [collectionId], references: [id])
-  creator           User                @relation("NFTCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  ownerId               String?  // Add this field
+  owner                 User?    @relation("OwnedNFTs", fields: [ownerId], references: [id]) // Add this relation
 }
 
 model User {
   id                    String               @id @default(cuid())
   address               String               @unique
   nftCollectionsCreated nftCollectionSchema[] @relation("CollectionCreator")
-  nftsCreated           nftSchema[]          @relation("NFTCreator")
+  ownedNfts             nftCollectionSchema[] @relation("OwnedNFTs") // Update this relation
 }

@@ -4,33 +4,43 @@ import { useAddress, Web3Button } from "@thirdweb-dev/react";
 import { useOwnedNFTs } from "@thirdweb-dev/react";
 import { useContract } from "@thirdweb-dev/react";
 import Link from "next/link";
+import { claimNft } from "../lib/prismaFunctions";
 
 interface Item {
-  collectionAddress: string;
+  id: string;
+  ownerAddress: string;
+  collectionName: string;
   collectionDescription: string;
   collectionImage: string;
-  collectionName: string;
   createdAt: Date;
   creatorId: string;
   creatorWalletAddress: string;
-  id: string;
-  nfts: any[];
-  ownerAddress: string;
+  collectionAddress: string;
+  tokenId: string;
   discordLink: string;
+  ownerId: string | null;
 }
 
 interface CommunityBoxProps {
   index: number;
   item: Item;
+  address: string;
+  userId: string;
 }
 
-const CommunityBox: React.FC<CommunityBoxProps> = ({ index, item }) => {
+const CommunityBox: React.FC<CommunityBoxProps> = ({
+  index,
+  item,
+  address,
+  userId,
+}) => {
   const [value, setValue] = useState(false);
-  const address = useAddress();
   const { contract } = useContract(item.collectionAddress);
   const { data: ownsNft, error } = useOwnedNFTs(contract, address);
 
-  console.log("owns", ownsNft);
+  // console.log(item);
+
+  // console.log("owns", ownsNft);
   return (
     <div
       key={index}
@@ -59,7 +69,10 @@ const CommunityBox: React.FC<CommunityBoxProps> = ({ index, item }) => {
         ) : (
           <Web3Button
             contractAddress={item.collectionAddress}
-            action={(contract) => contract.erc1155.claim(0, 1)}
+            action={(contract) => {
+              contract.erc1155.claim(item.tokenId, 1);
+              claimNft(userId, item.id);
+            }}
             className="bg-transparent"
             style={{ backgroundColor: "transparent" }}
           >

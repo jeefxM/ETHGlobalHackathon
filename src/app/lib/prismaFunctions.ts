@@ -77,6 +77,9 @@ export const getUser = async (address: string) => {
       where: {
         address: address,
       },
+      include: {
+        ownedNfts: true,
+      },
     });
     return data;
   } catch (e) {
@@ -86,13 +89,25 @@ export const getUser = async (address: string) => {
 
 export const getCollections = async () => {
   try {
-    const data = await prisma.nftCollectionSchema.findMany({
-      include: {
-        nfts: true,
-      },
-    });
+    const data = await prisma.nftCollectionSchema.findMany({});
     return data;
   } catch (e) {
     console.log(e);
+  }
+};
+
+export const claimNft = async (userId: string, nftId: string) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ownedNfts: {
+          connect: { id: nftId },
+        },
+      },
+    });
+    return updatedUser;
+  } catch (err) {
+    console.log(err);
   }
 };

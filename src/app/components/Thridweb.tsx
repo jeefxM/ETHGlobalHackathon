@@ -8,6 +8,7 @@ import {
   Airdao,
   BinanceTestnet,
   AirdaoTestnet,
+  FlowMainnet,
 } from "@thirdweb-dev/chains";
 import {
   coinbaseWallet,

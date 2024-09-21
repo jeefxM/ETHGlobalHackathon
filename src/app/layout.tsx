@@ -58,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fonts}`}>
+    <html lang="en" className={`${fonts} bg-[#FEF3FF]`}>
       <head></head>
       <body>
         <ThirdwebAppWrapper>
