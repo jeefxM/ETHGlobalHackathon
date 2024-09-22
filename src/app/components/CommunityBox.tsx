@@ -65,7 +65,7 @@ const CommunityBox: React.FC<CommunityBoxProps> = ({
             <p className="text-xl font-semibold">{item.collectionName}</p>
             <Link
               className="bg-[#71237A] text-white px-6 py-2 rounded-[40px] max-w-[200px] text-center whitespace-nowrap overflow-hidden text-ellipsis"
-              href={`${item.discordLink}`}
+              href={`https://${item.discordLink}`}
               target="_blank"
               rel="noopener noreferrer"
             >

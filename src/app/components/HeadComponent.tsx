@@ -12,6 +12,7 @@ import CreateCollection from "./CreateCollection";
 import { CiCirclePlus } from "react-icons/ci";
 import Logo from "../../../public/logo.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 const HeadComponent = () => {
   return (
@@ -29,6 +30,8 @@ const HeadComponent = () => {
             <CreateCollection />
           </DialogContent>
         </Dialog>
+
+        <Link href={"https://airgate.gitbook.io/airgate"}>Docs</Link>
 
         <ConnectWallet
           className="bg-[#999] font-sans"

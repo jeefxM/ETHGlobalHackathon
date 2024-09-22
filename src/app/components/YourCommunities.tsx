@@ -55,6 +55,12 @@ const YourCommunities: React.FC<YourCommunitiesProps> = ({ user }) => {
                 onClick={() => copyToClipboard(nft.collectionAddress)}
                 className="bg-[#71237A] text-white px-4 py-2 rounded-[40px] mt-auto"
               >
+                Join Discord
+              </button>
+              <button
+                onClick={() => copyToClipboard(nft.collectionAddress)}
+                className="bg-[#71237A] text-white px-4 py-2 rounded-[40px] mt-auto"
+              >
                 Copy Address
               </button>
             </div>
